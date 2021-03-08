@@ -24,59 +24,23 @@ pipeline {
                 sh 'tar czf build-${BUILD_NUMBER}.tar.gz build/'
             }
         }
-        stage('Push to artifact server') { 
-             steps {
-                withCredentials([usernamePassword(credentialsId: 'artifact', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
-                    sshPublisher(
-                        failOnError: true,
-                        continueOnError: false,
-                        publishers: [
-                            sshPublisherDesc(
-                                configName: 'artifact_server',
-                                sshCredentials: [
-                                    username: "$USERNAME",
-                                    encryptedPassphrase: "$USERPASS"
-                                ], 
-                                transfers: [
-                                    sshTransfer(
-                                        sourceFiles: 'build-${BUILD_NUMBER}.tar.gz',
-                                        remoteDirectory: '/front_artifactory',
-                                    )
-                                ]
-                            )
-                        ]
-                    )
-                }
-            }
-        }
-    stage('DeployToStaging') {
-            when {
-                branch 'main'
-            }
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'frontend', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
-                    sshPublisher(
-                        failOnError: true,
-                        continueOnError: false,
-                        publishers: [
-                            sshPublisherDesc(
-                                configName: 'backend_root',
-                                sshCredentials: [
-                                    username: "$USERNAME",
-                                    encryptedPassphrase: "$USERPASS"
-                                ], 
-                                transfers: [
-                                    sshTransfer(
-                                        sourceFiles: 'build/',
-                                        remoteDirectory: '/home/teachua/www/front/',
-                                         execCommand: 'sudo docker restart apache_prod'
-                                    )
-                                ]
-                            )
-                        ]
-                    )
-                }
-            }
-        }
+         stage('SSH transfer') {
+               steps {
+                 sshPublisher(
+                    continueOnError: false, failOnError: true,
+                       publishers: [
+                       sshPublisherDesc(
+                        configName: "ec2-user@3.64.250.181",
+                         verbose: true,
+                           transfers: [
+                             sshTransfer(
+                             sourceFiles: "build/",
+                             remoteDirectory: "/home/ec2-user/teachua/www/front/",
+                             execCommand: "sudo docker restart apache_prod"
+                )
+          ])
+      ])
+   }
+ }
     }
 }
