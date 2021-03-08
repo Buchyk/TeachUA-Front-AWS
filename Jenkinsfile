@@ -24,6 +24,23 @@ pipeline {
                 sh 'tar czf build-${BUILD_NUMBER}.tar.gz build/'
             }
         }
+         stage('SSH save to archive') {
+               steps {
+                 sshPublisher(
+                    continueOnError: false, failOnError: true,
+                       publishers: [
+                       sshPublisherDesc(
+                        configName: "ec2-user@3.64.250.181",
+                         verbose: true,
+                           transfers: [
+                             sshTransfer(
+                             sourceFiles: "build-${BUILD_NUMBER}.tar.gz",
+                             remoteDirectory: "/home/ec2-user/mount/"
+                    )
+                ])
+            ])
+         }
+      }
          stage('SSH transfer') {
                steps {
                  sshPublisher(
@@ -37,10 +54,10 @@ pipeline {
                              sourceFiles: "build/",
                              remoteDirectory: "/home/ec2-user/teachua/www/front/",
                              execCommand: "sudo docker restart apache_prod"
-                )
-          ])
-      ])
-   }
- }
+                    )
+                ])
+            ])
+         }
+      }
     }
 }
