@@ -35,7 +35,7 @@ pipeline {
                            transfers: [
                              sshTransfer(
                              sourceFiles: "build-${BUILD_NUMBER}.tar.gz",
-                             remoteDirectory: "/home/ec2-user/mount/"
+                             remoteDirectory: "/home/ec2-user/mount/front"
                     )
                 ])
             ])
