@@ -53,7 +53,6 @@ pipeline {
                              sshTransfer(
                                  sourceFiles: "${SOURCE_FILES}",
                                  remoteDirectory: "${REMOTE_WORK_DIR}",
-                           //      execCommand: "sudo docker restart ${PROD_SERV}"
                     )
                 ])
             ])
