@@ -36,10 +36,10 @@ pipeline {
                              sshTransfer(
                              sourceFiles: "build-${BUILD_NUMBER}.tar.gz",
                                  remoteDirectory: "${SAVE_ARCHIVE}"
-                    )
+                        )
+                    ])
                 ])
-            ])
-         }
+             }
       }
          stage('SSH transfer') {
                steps {
